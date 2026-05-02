@@ -570,7 +570,7 @@ input[type="date"], input[type="number"] {
         <input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/..." style="width: 100%; margin-bottom: 12px;">
         <div style="display: flex; gap: 8px;">
           <input type="text" id="user-name" placeholder="Your name (e.g., Sarah, Dad, Caregiver)" style="flex: 1;">
-          <button onclick="connectSheets()">Connect & Test</button>
+          <button onclick="connectSheets()" class="primary" style="min-width: 120px;">Save & Connect</button>
         </div>
         <button onclick="disconnectSheets()" style="margin-top: 8px;">Disconnect</button>
       </div>
@@ -1205,7 +1205,7 @@ function connectSheets() {
         localStorage.setItem('sheets-script-url', url);
         localStorage.setItem('user-name', name);
         updateSheetsStatus();
-        showMessage('✓ Connected to Google Sheets! Data will now sync automatically.');
+        showMessage('✓ Saved! You\'re connected to Google Sheets. Your entries will now sync automatically.');
       } else {
         showMessage('Connection failed: ' + (result.error || 'Unknown error'));
       }
