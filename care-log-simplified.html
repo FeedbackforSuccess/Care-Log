@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Care Log - Parkinson's Care Tracker</title>
+<style>
+:root {
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F8F7F4;
+  --color-background-tertiary: #F1EFE8;
+  --color-background-info: #E6F1FB;
+  --color-background-success: #EAF3DE;
+  --color-background-warning: #FAEEDA;
+  --color-background-danger: #FCEBEB;
+  --color-text-primary: #1A1816;
+  --color-text-secondary: #706C66;
+  --color-text-tertiary: #9D9892;
+  --color-text-info: #185FA5;
+  --color-text-success: #3B6D11;
+  --color-text-warning: #854F0B;
+  --color-text-danger: #A32D2D;
+  --color-border-tertiary: rgba(26, 24, 22, 0.15);
+  --color-border-secondary: rgba(26, 24, 22, 0.3);
+  --color-border-info: #378ADD;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background-primary: #1A1816;
+    --color-background-secondary: #2C2A26;
+    --color-background-tertiary: #3A3834;
+    --color-background-info: #0C447C;
+    --color-background-success: #27500A;
+    --color-background-warning: #633806;
+    --color-background-danger: #791F1F;
+    --color-text-primary: #F8F7F4;
+    --color-text-secondary: #C4C1BA;
+    --color-text-tertiary: #9D9892;
+    --color-text-info: #B5D4F4;
+    --color-text-success: #C0DD97;
+    --color-text-warning: #FAC775;
+    --color-text-danger: #F7C1C1;
+    --color-border-tertiary: rgba(248, 247, 244, 0.15);
+    --color-border-secondary: rgba(248, 247, 244, 0.3);
+    --color-border-info: #378ADD;
+  }
+}
+
+* { box-sizing: border-box; }
+body { 
+  font-family: var(--font-sans); 
+  margin: 0; 
+  padding: 1.5rem; 
+  background: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.container {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  border: 0.5px solid var(--color-border-tertiary);
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  padding-bottom: 0;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 12px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans);
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.tab:hover { 
+  color: var(--color-text-primary);
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+}
+
+.tab.active { 
+  color: #1D9E75;
+  border-bottom-color: #1D9E75;
+  font-weight: 500;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 1.5rem; 
+  padding-bottom: 1rem; 
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-left h1 { font-size: 22px; font-weight: 500; margin: 0 0 8px; }
+
+.action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+button {
+  background: transparent;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  transition: all 0.15s;
+}
+
+button:hover { background: var(--color-background-secondary); }
+button:active { transform: scale(0.98); }
+button.primary {
+  background: #1D9E75;
+  color: white;
+  border: none;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(29, 158, 117, 0.3);
+}
+
+button.primary:hover {
+  background: #0F8664;
+  box-shadow: 0 4px 12px rgba(29, 158, 117, 0.4);
+}
+
+.question {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  padding: 1.25rem;
+  border-radius: var(--border-radius-lg);
+  border: none;
+}
+
+.question:last-child {
+  border-bottom: none;
+  padding-bottom: 1.25rem;
+}
+
+.question-label {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
+}
+
+.options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.option-btn {
+  background: white;
+  border: 1.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: 12px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.option-btn:hover { 
+  background: white;
+  border-color: #1D9E75;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.option-btn.selected { 
+  background: var(--color-background-info); 
+  color: var(--color-text-info); 
+  border-color: var(--color-border-info);
+  box-shadow: 0 2px 8px rgba(55, 138, 221, 0.3);
+}
+
+.option-btn.warning.selected {
+  background: var(--color-background-warning);
+  color: var(--color-text-warning);
+  border-color: var(--color-text-warning);
+}
+
+.option-btn.danger.selected {
+  background: var(--color-background-danger);
+  color: var(--color-text-danger);
+  border-color: var(--color-text-danger);
+}
+
+textarea {
+  width: 100%;
+  min-height: 80px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+textarea:focus, input:focus { 
+  outline: none;
+  border-color: var(--color-border-secondary);
+}
+
+input[type="date"], input[type="number"] {
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: 8px 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.message { 
+  background: var(--color-background-success); 
+  color: var(--color-text-success); 
+  padding: 12px 16px; 
+  border-radius: var(--border-radius-md); 
+  margin-bottom: 1rem; 
+  display: none;
+  box-shadow: 0 2px 8px rgba(59, 109, 17, 0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 1.25rem;
+  border: 0.5px solid var(--color-border-tertiary);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.stat-trend {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.trend-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 1rem;
+}
+
+.trend-table th {
+  text-align: left;
+  padding: 8px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+
+.trend-table td {
+  padding: 8px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+
+.flag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-md);
+  font-size: 12px;
+}
+
+.flag-warning {
+  background: var(--color-background-warning);
+  color: var(--color-text-warning);
+}
+
+.flag-danger {
+  background: var(--color-background-danger);
+  color: var(--color-text-danger);
+}
+
+.flag-success {
+  background: var(--color-background-success);
+  color: var(--color-text-success);
+}
+
+.setup-section {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.setup-section h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.setup-section p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.status-indicator {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--border-radius-md);
+  font-size: 13px;
+  margin-left: 12px;
+}
+
+.status-connected {
+  background: var(--color-background-success);
+  color: var(--color-text-success);
+}
+
+.status-disconnected {
+  background: var(--color-background-warning);
+  color: var(--color-text-warning);
+}
+
+.export-panel {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.date-range {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.date-range label {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+  body { padding: 1rem; }
+  .container { padding: 1rem; }
+  .options { flex-direction: column; }
+  .option-btn { width: 100%; }
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 1cm;
+  }
+  body { 
+    background: white;
+    max-width: 100%;
+    padding: 0;
+  }
+  .container { 
+    border: none; 
+    box-shadow: none;
+    padding: 1rem;
+  }
+  button { display: none; }
+  .action-btns { display: none; }
+  .tabs { display: none; }
+  #dailyLog { display: none; }
+  #settings { display: none; }
+  .stat-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .trend-table {
+    font-size: 11px;
+  }
+  .trend-table th,
+  .trend-table td {
+    padding: 6px 4px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="message" class="message"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('dailyLog')">Daily Log</button>
+    <button class="tab" onclick="switchTab('dashboard')">Weekly Summary</button>
+    <button class="tab" onclick="switchTab('settings')">Settings</button>
+  </div>
+
+  <!-- DAILY LOG TAB -->
+  <div id="dailyLog" class="tab-content active">
+    <div style="background: #1D9E75; padding: 2rem; border-radius: var(--border-radius-lg); margin-bottom: 1.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <h2 style="font-size: 40px; font-weight: 700; margin: 0; color: white; letter-spacing: 0.5px;">Beryl's Care Log</h2>
+      <p style="margin: 6px 0 0; font-size: 15px; color: rgba(255,255,255,0.95); font-weight: 400;">Daily health tracking</p>
+    </div>
+    
+    <div class="header">
+      <div class="header-left">
+        <h1>Daily care log</h1>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+          <input type="date" id="log-date" style="font-size: 14px;">
+          <button onclick="changeDate(-1)" style="padding: 6px 12px;">← Prev</button>
+          <button onclick="changeDate(1)" style="padding: 6px 12px;">Next →</button>
+          <button onclick="goToToday()" style="padding: 6px 12px;">Today</button>
+        </div>
+      </div>
+      <div class="action-btns">
+        <button onclick="saveLog()" class="primary">Save entry</button>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">Medications taken today?</div>
+      <div class="options" id="meds-options"></div>
+      <div id="med-details-box" style="display: none; margin-top: 12px;">
+        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Please provide details:</label>
+        <textarea id="med-details" placeholder="e.g., Morning dose 30 min late, evening dose missed" style="min-height: 60px;"></textarea>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">Any falls today?</div>
+      <div class="options" id="falls-options"></div>
+      <div id="falls-details-box" style="display: none; margin-top: 12px;">
+        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Please describe what happened:</label>
+        <textarea id="falls-details" placeholder="e.g., Lost balance in bathroom, no injury" style="min-height: 60px;"></textarea>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">How was her day overall?</div>
+      <div class="options" id="day-options"></div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">Motor symptoms compared to usual</div>
+      <div class="options" id="motor-options"></div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">"On/Off" periods today</div>
+      <p style="margin: 0 0 12px; font-size: 13px; color: var(--color-text-secondary);">"On" = medications working well, good movement. "Off" = medications wearing off, more tremor/stiffness</p>
+      <div class="options" id="onoff-options"></div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">Quick notes (optional)</div>
+      <p style="margin: 0 0 8px; font-size: 13px; color: var(--color-text-secondary);">Anything worth noting - good moments, concerns, changes, questions for doctor...</p>
+      <textarea id="notes"></textarea>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; padding-top: 1rem; border-top: 0.5px solid var(--color-border-tertiary);">
+      <button onclick="saveLog()" class="primary">Save entry</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD TAB -->
+  <div id="dashboard" class="tab-content">
+    <div style="background: #1D9E75; padding: 2rem; border-radius: var(--border-radius-lg); margin-bottom: 1.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <h2 style="font-size: 40px; font-weight: 700; margin: 0; color: white; letter-spacing: 0.5px;">Beryl's Care Log</h2>
+      <p style="margin: 6px 0 0; font-size: 15px; color: rgba(255,255,255,0.95); font-weight: 400;">Weekly summary</p>
+    </div>
+    
+    <div class="header">
+      <div class="header-left">
+        <h1>Weekly Summary</h1>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap;">
+          <label style="font-size: 14px; color: var(--color-text-secondary);">Week ending:</label>
+          <input type="date" id="dashboard-end-date" style="font-size: 14px;">
+          <button onclick="changeDashboardWeek(-7)" style="padding: 6px 12px;">← Prev week</button>
+          <button onclick="changeDashboardWeek(7)" style="padding: 6px 12px;">Next week →</button>
+          <button onclick="goToCurrentWeek()" style="padding: 6px 12px;">Current week</button>
+        </div>
+      </div>
+      <div class="action-btns">
+        <button onclick="exportDashboardToExcel()">Export to Excel</button>
+        <button onclick="window.print()">Print</button>
+      </div>
+    </div>
+
+    <div id="dashboard-content"></div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="settings" class="tab-content">
+    <div style="background: #1D9E75; padding: 2rem; border-radius: var(--border-radius-lg); margin-bottom: 1.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <h2 style="font-size: 40px; font-weight: 700; margin: 0; color: white; letter-spacing: 0.5px;">Beryl's Care Log</h2>
+      <p style="margin: 6px 0 0; font-size: 15px; color: rgba(255,255,255,0.95); font-weight: 400;">Settings & export</p>
+    </div>
+    
+    <div class="header">
+      <div class="header-left">
+        <h1>Settings</h1>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h3>Google Sheets Sync
+        <span class="status-indicator" id="sheets-status">Not connected</span>
+      </h3>
+      <p>Sync data to Google Sheets so everyone can see and edit the same care log from any device.</p>
+      
+      <div style="margin-top: 16px;">
+        <label style="display: block; font-size: 14px; margin-bottom: 6px; color: var(--color-text-secondary);">Your Google Apps Script Web App URL</label>
+        <input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/..." style="width: 100%; margin-bottom: 12px;">
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="user-name" placeholder="Your name (e.g., Sarah, Dad, Caregiver)" style="flex: 1;">
+          <button onclick="connectSheets()">Connect & Test</button>
+        </div>
+        <button onclick="disconnectSheets()" style="margin-top: 8px;">Disconnect</button>
+      </div>
+
+      <div style="margin-top: 16px; padding: 12px; background: var(--color-background-info); border-radius: var(--border-radius-md);">
+        <p style="margin: 0 0 8px; font-size: 13px; color: var(--color-text-info); font-weight: 500;">
+          Setup Instructions (one-time):
+        </p>
+        <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--color-text-info); line-height: 1.6;">
+          <li>Open Google Sheets and create a new blank spreadsheet</li>
+          <li>Go to Extensions → Apps Script</li>
+          <li>Delete the default code and paste the code from <strong>google-apps-script.js</strong></li>
+          <li>Click the blue "Deploy" button → New deployment</li>
+          <li>Click the gear icon next to "Select type" → Choose "Web app"</li>
+          <li>Set "Execute as" to "Me"</li>
+          <li>Set "Who has access" to "Anyone"</li>
+          <li>Click Deploy and copy the Web App URL</li>
+          <li>Paste the URL above and click Connect & Test</li>
+          <li>Share the Google Sheet with everyone who needs access</li>
+        </ol>
+        <p style="margin: 12px 0 0; font-size: 13px; color: var(--color-text-info);">
+          <strong>Note:</strong> Everyone uses the same URL. Once set up, all devices sync automatically.
+        </p>
+      </div>
+    </div>
+
+    <div class="export-panel">
+      <h3 style="margin: 0 0 12px; font-size: 16px; font-weight: 500;">Export to Excel</h3>
+      <p style="margin: 0 0 16px; font-size: 14px; color: var(--color-text-secondary);">Export data for a specific date range to Excel format</p>
+      
+      <div class="date-range">
+        <label>From:</label>
+        <input type="date" id="export-start" style="flex: 1;">
+        <label>To:</label>
+        <input type="date" id="export-end" style="flex: 1;">
+      </div>
+      
+      <button onclick="exportToExcel()">Download Excel File</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+let currentDate = new Date();
+let sheetsUrl = localStorage.getItem('sheets-script-url') || '';
+let userName = localStorage.getItem('user-name') || '';
+let dashboardEndDate = new Date();
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  const dateInput = document.getElementById('log-date');
+  dateInput.value = currentDate.toISOString().split('T')[0];
+  
+  dateInput.addEventListener('change', function() {
+    currentDate = new Date(this.value + 'T12:00:00');
+    loadLogForDate(currentDate);
+  });
+  
+  // Set up dashboard date picker
+  const dashboardDateInput = document.getElementById('dashboard-end-date');
+  dashboardDateInput.value = dashboardEndDate.toISOString().split('T')[0];
+  
+  dashboardDateInput.addEventListener('change', function() {
+    dashboardEndDate = new Date(this.value + 'T23:59:59');
+    generateDashboard();
+  });
+  
+  // Set default export dates
+  const today = new Date();
+  const weekAgo = new Date();
+  weekAgo.setDate(today.getDate() - 6);
+  document.getElementById('export-start').value = weekAgo.toISOString().split('T')[0];
+  document.getElementById('export-end').value = today.toISOString().split('T')[0];
+  
+  // Build option buttons
+  buildOptions('meds-options', [
+    { text: 'All taken on time', value: 'all-ontime' },
+    { text: 'All taken, not on time', value: 'all-late', class: 'warning' },
+    { text: 'Some missed', value: 'some', class: 'warning' },
+    { text: 'Major issues', value: 'issues', class: 'danger' }
+  ]);
+  
+  buildOptions('falls-options', [
+    { text: 'No falls', value: 'no' },
+    { text: 'Yes - 1 fall', value: 'one', class: 'danger' },
+    { text: 'Yes - multiple', value: 'multiple', class: 'danger' }
+  ]);
+  
+  buildOptions('day-options', [
+    { text: 'Good day', value: 'good' },
+    { text: 'OK day', value: 'ok' },
+    { text: 'Difficult day', value: 'difficult', class: 'warning' }
+  ]);
+  
+  buildOptions('motor-options', [
+    { text: 'Better than usual', value: 'better' },
+    { text: 'About the same', value: 'same' },
+    { text: 'Worse than usual', value: 'worse', class: 'warning' }
+  ]);
+  
+  buildOptions('onoff-options', [
+    { text: 'Mostly "On" all day', value: 'mostly-on' },
+    { text: 'Mixed "On" and "Off"', value: 'mixed', class: 'warning' },
+    { text: 'Mostly "Off" today', value: 'mostly-off', class: 'danger' },
+    { text: 'Hard to tell', value: 'unclear' }
+  ]);
+  
+  loadLogForDate(currentDate);
+  updateSheetsStatus();
+});
+
+function buildOptions(containerId, options) {
+  const container = document.getElementById(containerId);
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (opt.class ? ' ' + opt.class : '');
+    btn.textContent = opt.text;
+    btn.dataset.value = opt.value;
+    btn.onclick = () => {
+      container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      
+      // Show/hide conditional text boxes
+      if (containerId === 'meds-options') {
+        const detailsBox = document.getElementById('med-details-box');
+        if (opt.value !== 'all-ontime') {
+          detailsBox.style.display = 'block';
+        } else {
+          detailsBox.style.display = 'none';
+          document.getElementById('med-details').value = '';
+        }
+      }
+      
+      if (containerId === 'falls-options') {
+        const detailsBox = document.getElementById('falls-details-box');
+        if (opt.value !== 'no') {
+          detailsBox.style.display = 'block';
+        } else {
+          detailsBox.style.display = 'none';
+          document.getElementById('falls-details').value = '';
+        }
+      }
+    };
+    container.appendChild(btn);
+  });
+}
+
+function updateDateDisplay() {
+  const dateInput = document.getElementById('log-date');
+  dateInput.value = currentDate.toISOString().split('T')[0];
+  loadLogForDate(currentDate);
+}
+
+function changeDate(days) {
+  currentDate.setDate(currentDate.getDate() + days);
+  updateDateDisplay();
+}
+
+function goToToday() {
+  currentDate = new Date();
+  updateDateDisplay();
+}
+
+function changeDashboardWeek(days) {
+  dashboardEndDate.setDate(dashboardEndDate.getDate() + days);
+  document.getElementById('dashboard-end-date').value = dashboardEndDate.toISOString().split('T')[0];
+  generateDashboard();
+}
+
+function goToCurrentWeek() {
+  dashboardEndDate = new Date();
+  document.getElementById('dashboard-end-date').value = dashboardEndDate.toISOString().split('T')[0];
+  generateDashboard();
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+  
+  if (tabName === 'dashboard') {
+    generateDashboard();
+  }
+}
+
+function saveLog() {
+  const data = {
+    date: currentDate.toISOString().split('T')[0],
+    medications: document.querySelector('#meds-options .option-btn.selected')?.dataset.value || null,
+    medicationDetails: document.getElementById('med-details').value || '',
+    falls: document.querySelector('#falls-options .option-btn.selected')?.dataset.value || null,
+    fallsDetails: document.getElementById('falls-details').value || '',
+    dayQuality: document.querySelector('#day-options .option-btn.selected')?.dataset.value || null,
+    motorSymptoms: document.querySelector('#motor-options .option-btn.selected')?.dataset.value || null,
+    onOffPeriods: document.querySelector('#onoff-options .option-btn.selected')?.dataset.value || null,
+    notes: document.getElementById('notes').value,
+    timestamp: new Date().toISOString(),
+    enteredBy: userName || 'Unknown'
+  };
+  
+  // Always save locally first
+  const storageKey = `care-log-${data.date}`;
+  localStorage.setItem(storageKey, JSON.stringify(data));
+  
+  // Sync to Google Sheets if connected
+  if (sheetsUrl) {
+    syncToSheets(data);
+  } else {
+    showMessage('Saved locally for ' + currentDate.toLocaleDateString('en-ZA', { weekday: 'long', month: 'long', day: 'numeric' }));
+  }
+}
+
+function clearForm() {
+  document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+  document.getElementById('notes').value = '';
+  document.getElementById('med-details').value = '';
+  document.getElementById('falls-details').value = '';
+  document.getElementById('med-details-box').style.display = 'none';
+  document.getElementById('falls-details-box').style.display = 'none';
+}
+
+function loadLogForDate(date) {
+  const dateKey = date.toISOString().split('T')[0];
+  
+  clearForm();
+  
+  // Try loading from Google Sheets first if connected
+  if (sheetsUrl) {
+    loadFromSheets(dateKey);
+  } else {
+    loadFromLocalStorage(dateKey);
+  }
+}
+
+function loadFromLocalStorage(dateKey) {
+  const stored = localStorage.getItem(`care-log-${dateKey}`);
+  
+  if (stored) {
+    const data = JSON.parse(stored);
+    populateForm(data);
+  }
+}
+
+function populateForm(data) {
+  if (data.medications) {
+    const btn = document.querySelector(`#meds-options .option-btn[data-value="${data.medications}"]`);
+    if (btn) {
+      btn.classList.add('selected');
+      if (data.medications !== 'all-ontime') {
+        document.getElementById('med-details-box').style.display = 'block';
+      }
+    }
+  }
+  
+  if (data.medicationDetails) {
+    document.getElementById('med-details').value = data.medicationDetails;
+  }
+  
+  if (data.falls) {
+    const btn = document.querySelector(`#falls-options .option-btn[data-value="${data.falls}"]`);
+    if (btn) {
+      btn.classList.add('selected');
+      if (data.falls !== 'no') {
+        document.getElementById('falls-details-box').style.display = 'block';
+      }
+    }
+  }
+  
+  if (data.fallsDetails) {
+    document.getElementById('falls-details').value = data.fallsDetails;
+  }
+  
+  if (data.dayQuality) {
+    const btn = document.querySelector(`#day-options .option-btn[data-value="${data.dayQuality}"]`);
+    if (btn) btn.classList.add('selected');
+  }
+  
+  if (data.motorSymptoms) {
+    const btn = document.querySelector(`#motor-options .option-btn[data-value="${data.motorSymptoms}"]`);
+    if (btn) btn.classList.add('selected');
+  }
+  
+  if (data.onOffPeriods) {
+    const btn = document.querySelector(`#onoff-options .option-btn[data-value="${data.onOffPeriods}"]`);
+    if (btn) btn.classList.add('selected');
+  }
+  
+  if (data.notes) {
+    document.getElementById('notes').value = data.notes;
+  }
+}
+
+function generateDashboard() {
+  const endDate = new Date(dashboardEndDate);
+  const startDate = new Date(endDate);
+  startDate.setDate(endDate.getDate() - 6);
+  
+  const dateRangeText = startDate.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' }) + ' - ' +
+    endDate.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric', year: 'numeric' });
+  
+  // If connected to sheets, load from there
+  if (sheetsUrl) {
+    loadDashboardFromSheets(startDate, endDate, dateRangeText);
+  } else {
+    loadDashboardFromLocalStorage(startDate, endDate, dateRangeText);
+  }
+}
+
+function loadDashboardFromLocalStorage(startDate, endDate, dateRangeText) {
+  const logs = [];
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    const dateKey = d.toISOString().split('T')[0];
+    const stored = localStorage.getItem(`care-log-${dateKey}`);
+    if (stored) {
+      logs.push(JSON.parse(stored));
+    }
+  }
+  
+  renderDashboard(logs, dateRangeText);
+}
+
+function loadDashboardFromSheets(startDate, endDate, dateRangeText) {
+  const params = new URLSearchParams({
+    action: 'getRange',
+    startDate: startDate.toISOString().split('T')[0],
+    endDate: endDate.toISOString().split('T')[0]
+  });
+  
+  fetch(sheetsUrl + '?' + params.toString())
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        renderDashboard(result.entries || [], dateRangeText);
+      } else {
+        // Fall back to local storage
+        loadDashboardFromLocalStorage(startDate, endDate, dateRangeText);
+      }
+    })
+    .catch(error => {
+      console.error('Load dashboard from sheets failed:', error);
+      loadDashboardFromLocalStorage(startDate, endDate, dateRangeText);
+    });
+}
+
+function renderDashboard(logs, dateRangeText) {
+  if (logs.length === 0) {
+    document.getElementById('dashboard-content').innerHTML = `
+      <p style="color: var(--color-text-secondary);">No data available for ${dateRangeText}.</p>
+    `;
+    return;
+  }
+  
+  // Calculate stats
+  const medOnTime = logs.filter(l => l.medications === 'all-ontime').length;
+  const medLate = logs.filter(l => l.medications === 'all-late').length;
+  const medAdherence = medOnTime + medLate;
+  const medIssues = logs.filter(l => l.medications === 'issues').length;
+  const totalFalls = logs.reduce((sum, l) => {
+    if (l.falls === 'one') return sum + 1;
+    if (l.falls === 'multiple') return sum + 2;
+    return sum;
+  }, 0);
+  const goodDays = logs.filter(l => l.dayQuality === 'good').length;
+  const difficultDays = logs.filter(l => l.dayQuality === 'difficult').length;
+  const worseMotor = logs.filter(l => l.motorSymptoms === 'worse').length;
+  const mostlyOff = logs.filter(l => l.onOffPeriods === 'mostly-off').length;
+  const mixedOnOff = logs.filter(l => l.onOffPeriods === 'mixed').length;
+  
+  const html = `
+    <p style="font-size: 14px; color: var(--color-text-secondary); margin: 0 0 1.5rem;">Showing data for ${dateRangeText}</p>
+    
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Medication adherence</div>
+        <div class="stat-value">${medAdherence}/${logs.length}</div>
+        <div class="stat-trend">${medOnTime} on time${medLate > 0 ? ', ' + medLate + ' late' : ''}${medIssues > 0 ? ', ' + medIssues + ' with issues' : ''}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Falls this week</div>
+        <div class="stat-value">${totalFalls}</div>
+        <div class="stat-trend ${totalFalls > 0 ? 'flag flag-danger' : 'flag flag-success'}">
+          ${totalFalls > 0 ? 'Requires attention' : 'No falls'}
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Good days</div>
+        <div class="stat-value">${goodDays}/${logs.length}</div>
+        <div class="stat-trend">${difficultDays} difficult days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Motor symptoms</div>
+        <div class="stat-value">${worseMotor > 0 ? worseMotor + ' worse' : 'Stable'}</div>
+        <div class="stat-trend ${worseMotor > 2 ? 'flag flag-warning' : ''}">
+          ${worseMotor > 2 ? 'May need review' : 'Generally stable'}
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">"On/Off" fluctuations</div>
+        <div class="stat-value">${mostlyOff > 0 ? mostlyOff + ' mostly off' : mixedOnOff > 0 ? mixedOnOff + ' mixed' : 'Good'}</div>
+        <div class="stat-trend ${mostlyOff > 1 || mixedOnOff > 3 ? 'flag flag-warning' : ''}">
+          ${mostlyOff > 1 || mixedOnOff > 3 ? 'Medication review needed' : 'Well controlled'}
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 2rem 0 1rem; font-size: 16px; font-weight: 500;">Daily log</h3>
+    <table class="trend-table">
+      <thead>
+        <tr>
+          <th style="width: 80px;">Date</th>
+          <th style="width: 130px;">Medications</th>
+          <th style="width: 80px;">Falls</th>
+          <th style="width: 90px;">Day quality</th>
+          <th style="width: 110px;">On/Off periods</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${logs.map(log => {
+          const date = new Date(log.date);
+          const medText = { 'all-ontime': 'All on time', 'all-late': 'All taken, late', some: 'Some missed', issues: 'Major issues' };
+          const fallsText = { no: 'No', one: '1 fall', multiple: 'Multiple' };
+          const dayText = { good: 'Good', ok: 'OK', difficult: 'Difficult' };
+          const onOffText = { 'mostly-on': 'Mostly "On"', 'mixed': 'Mixed', 'mostly-off': 'Mostly "Off"', 'unclear': 'Unclear' };
+          
+          return `
+            <tr>
+              <td>${date.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' })}</td>
+              <td>${medText[log.medications] || '-'}</td>
+              <td>${log.falls === 'no' ? 'No' : `<span class="flag flag-danger">${fallsText[log.falls]}</span>`}</td>
+              <td>${dayText[log.dayQuality] || '-'}</td>
+              <td>${log.onOffPeriods && log.onOffPeriods !== 'mostly-on' ? `<span class="flag ${log.onOffPeriods === 'mostly-off' ? 'flag-danger' : 'flag-warning'}">${onOffText[log.onOffPeriods]}</span>` : onOffText[log.onOffPeriods] || '-'}</td>
+              <td style="font-size: 13px;">${log.notes || '-'}</td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  document.getElementById('dashboard-content').innerHTML = html;
+}
+
+function exportToExcel() {
+  const startDate = new Date(document.getElementById('export-start').value + 'T00:00:00');
+  const endDate = new Date(document.getElementById('export-end').value + 'T23:59:59');
+  
+  if (isNaN(startDate) || isNaN(endDate)) {
+    showMessage('Please select valid start and end dates');
+    return;
+  }
+  
+  const logs = [];
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    const dateKey = d.toISOString().split('T')[0];
+    const stored = localStorage.getItem(`care-log-${dateKey}`);
+    if (stored) {
+      const data = JSON.parse(stored);
+      logs.push({
+        Date: dateKey,
+        'Entered By': data.enteredBy || 'Unknown',
+        Medications: data.medications === 'all-ontime' ? 'All taken on time' : 
+                    data.medications === 'all-late' ? 'All taken, not on time' :
+                    data.medications === 'some' ? 'Some missed' :
+                    data.medications === 'issues' ? 'Major issues' : '-',
+        'Medication Details': data.medicationDetails || '',
+        Falls: data.falls === 'no' ? 'No' :
+               data.falls === 'one' ? '1 fall' :
+               data.falls === 'multiple' ? 'Multiple falls' : '-',
+        'Falls Details': data.fallsDetails || '',
+        'Day Quality': data.dayQuality === 'good' ? 'Good' :
+                      data.dayQuality === 'ok' ? 'OK' :
+                      data.dayQuality === 'difficult' ? 'Difficult' : '-',
+        'Motor Symptoms': data.motorSymptoms === 'better' ? 'Better than usual' :
+                         data.motorSymptoms === 'same' ? 'About the same' :
+                         data.motorSymptoms === 'worse' ? 'Worse than usual' : '-',
+        'On/Off Periods': data.onOffPeriods === 'mostly-on' ? 'Mostly "On"' :
+                         data.onOffPeriods === 'mixed' ? 'Mixed "On" and "Off"' :
+                         data.onOffPeriods === 'mostly-off' ? 'Mostly "Off"' :
+                         data.onOffPeriods === 'unclear' ? 'Hard to tell' : '-',
+        Notes: data.notes || ''
+      });
+    }
+  }
+  
+  if (logs.length === 0) {
+    showMessage('No data found for selected date range');
+    return;
+  }
+  
+  const ws = XLSX.utils.json_to_sheet(logs);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Care Log');
+  
+  const filename = `care-log-${startDate.toISOString().split('T')[0]}-to-${endDate.toISOString().split('T')[0]}.xlsx`;
+  XLSX.writeFile(wb, filename);
+  
+  showMessage(`Exported ${logs.length} days to Excel`);
+}
+
+function exportDashboardToExcel() {
+  const endDate = new Date(dashboardEndDate);
+  const startDate = new Date(endDate);
+  startDate.setDate(endDate.getDate() - 6);
+  
+  const logs = [];
+  const summaryStats = [];
+  
+  // Collect daily data
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    const dateKey = d.toISOString().split('T')[0];
+    const stored = localStorage.getItem(`care-log-${dateKey}`);
+    if (stored) {
+      const data = JSON.parse(stored);
+      logs.push({
+        Date: dateKey,
+        'Entered By': data.enteredBy || 'Unknown',
+        Medications: data.medications === 'all-ontime' ? 'All taken on time' : 
+                    data.medications === 'all-late' ? 'All taken, not on time' :
+                    data.medications === 'some' ? 'Some missed' :
+                    data.medications === 'issues' ? 'Major issues' : '-',
+        'Medication Details': data.medicationDetails || '',
+        Falls: data.falls === 'no' ? 'No' :
+               data.falls === 'one' ? '1 fall' :
+               data.falls === 'multiple' ? 'Multiple falls' : '-',
+        'Falls Details': data.fallsDetails || '',
+        'Day Quality': data.dayQuality === 'good' ? 'Good' :
+                      data.dayQuality === 'ok' ? 'OK' :
+                      data.dayQuality === 'difficult' ? 'Difficult' : '-',
+        'Motor Symptoms': data.motorSymptoms === 'better' ? 'Better than usual' :
+                         data.motorSymptoms === 'same' ? 'About the same' :
+                         data.motorSymptoms === 'worse' ? 'Worse than usual' : '-',
+        'On/Off Periods': data.onOffPeriods === 'mostly-on' ? 'Mostly "On"' :
+                         data.onOffPeriods === 'mixed' ? 'Mixed "On" and "Off"' :
+                         data.onOffPeriods === 'mostly-off' ? 'Mostly "Off"' :
+                         data.onOffPeriods === 'unclear' ? 'Hard to tell' : '-',
+        Notes: data.notes || ''
+      });
+    }
+  }
+  
+  if (logs.length === 0) {
+    showMessage('No data found for this week');
+    return;
+  }
+  
+  // Calculate summary statistics
+  const parsedLogs = logs.map(l => {
+    const dateKey = l.Date;
+    return JSON.parse(localStorage.getItem(`care-log-${dateKey}`));
+  });
+  
+  const medOnTime = parsedLogs.filter(l => l.medications === 'all-ontime').length;
+  const medLate = parsedLogs.filter(l => l.medications === 'all-late').length;
+  const medAdherence = medOnTime + medLate;
+  const medIssues = parsedLogs.filter(l => l.medications === 'issues').length;
+  const totalFalls = parsedLogs.reduce((sum, l) => {
+    if (l.falls === 'one') return sum + 1;
+    if (l.falls === 'multiple') return sum + 2;
+    return sum;
+  }, 0);
+  const goodDays = parsedLogs.filter(l => l.dayQuality === 'good').length;
+  const difficultDays = parsedLogs.filter(l => l.dayQuality === 'difficult').length;
+  const mostlyOff = parsedLogs.filter(l => l.onOffPeriods === 'mostly-off').length;
+  const mixedOnOff = parsedLogs.filter(l => l.onOffPeriods === 'mixed').length;
+  
+  summaryStats.push(
+    { Metric: 'Week Period', Value: `${startDate.toLocaleDateString('en-ZA')} - ${endDate.toLocaleDateString('en-ZA')}` },
+    { Metric: 'Days Logged', Value: logs.length },
+    { Metric: '', Value: '' },
+    { Metric: 'Medication Adherence', Value: `${medAdherence}/${logs.length} days` },
+    { Metric: '  - On Time', Value: medOnTime },
+    { Metric: '  - Late', Value: medLate },
+    { Metric: '  - Issues', Value: medIssues },
+    { Metric: '', Value: '' },
+    { Metric: 'Total Falls', Value: totalFalls },
+    { Metric: '', Value: '' },
+    { Metric: 'Good Days', Value: `${goodDays}/${logs.length}` },
+    { Metric: 'Difficult Days', Value: difficultDays },
+    { Metric: '', Value: '' },
+    { Metric: 'On/Off Fluctuations', Value: '' },
+    { Metric: '  - Mostly Off Days', Value: mostlyOff },
+    { Metric: '  - Mixed Days', Value: mixedOnOff }
+  );
+  
+  // Create workbook with two sheets
+  const wb = XLSX.utils.book_new();
+  
+  // Summary sheet
+  const wsSummary = XLSX.utils.json_to_sheet(summaryStats);
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Weekly Summary');
+  
+  // Daily log sheet
+  const wsDaily = XLSX.utils.json_to_sheet(logs);
+  XLSX.utils.book_append_sheet(wb, wsDaily, 'Daily Log');
+  
+  const filename = `weekly-summary-${startDate.toISOString().split('T')[0]}-to-${endDate.toISOString().split('T')[0]}.xlsx`;
+  XLSX.writeFile(wb, filename);
+  
+  showMessage(`Exported weekly summary to Excel`);
+}
+
+function connectSheets() {
+  const url = document.getElementById('sheets-url').value.trim();
+  const name = document.getElementById('user-name').value.trim();
+  
+  if (!url) {
+    showMessage('Please enter your Google Apps Script Web App URL');
+    return;
+  }
+  
+  if (!name) {
+    showMessage('Please enter your name');
+    return;
+  }
+  
+  if (!url.includes('script.google.com/macros/s/')) {
+    showMessage('Please enter a valid Google Apps Script Web App URL');
+    return;
+  }
+  
+  // Test the connection
+  fetch(url + '?action=test')
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        sheetsUrl = url;
+        userName = name;
+        localStorage.setItem('sheets-script-url', url);
+        localStorage.setItem('user-name', name);
+        updateSheetsStatus();
+        showMessage('✓ Connected to Google Sheets! Data will now sync automatically.');
+      } else {
+        showMessage('Connection failed: ' + (result.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      showMessage('Connection failed. Please check your URL and try again.');
+      console.error('Connection error:', error);
+    });
+}
+
+function disconnectSheets() {
+  sheetsUrl = '';
+  userName = '';
+  localStorage.removeItem('sheets-script-url');
+  localStorage.removeItem('user-name');
+  document.getElementById('sheets-url').value = '';
+  document.getElementById('user-name').value = '';
+  updateSheetsStatus();
+  showMessage('Disconnected from Google Sheets. Data now saves locally only.');
+}
+
+function updateSheetsStatus() {
+  const status = document.getElementById('sheets-status');
+  const urlInput = document.getElementById('sheets-url');
+  const nameInput = document.getElementById('user-name');
+  
+  if (sheetsUrl && userName) {
+    status.textContent = 'Connected';
+    status.className = 'status-indicator status-connected';
+    urlInput.value = sheetsUrl;
+    nameInput.value = userName;
+  } else {
+    status.textContent = 'Not connected';
+    status.className = 'status-indicator status-disconnected';
+  }
+}
+
+function syncToSheets(data) {
+  const params = new URLSearchParams({
+    action: 'save',
+    date: data.date,
+    medications: data.medications || '',
+    medicationDetails: data.medicationDetails || '',
+    falls: data.falls || '',
+    fallsDetails: data.fallsDetails || '',
+    dayQuality: data.dayQuality || '',
+    motorSymptoms: data.motorSymptoms || '',
+    onOffPeriods: data.onOffPeriods || '',
+    notes: data.notes || '',
+    user: userName
+  });
+  
+  fetch(sheetsUrl + '?' + params.toString())
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        showMessage('✓ Saved and synced to Google Sheets');
+      } else {
+        showMessage('⚠ Saved locally, but sync failed: ' + (result.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      showMessage('⚠ Saved locally, but sync failed. Check your internet connection.');
+      console.error('Sync error:', error);
+    });
+}
+
+function loadFromSheets(dateKey) {
+  const params = new URLSearchParams({
+    action: 'load',
+    date: dateKey
+  });
+  
+  fetch(sheetsUrl + '?' + params.toString())
+    .then(response => response.json())
+    .then(result => {
+      if (result.success && result.data) {
+        populateForm(result.data);
+        // Also save to local storage for offline access
+        localStorage.setItem(`care-log-${dateKey}`, JSON.stringify(result.data));
+      } else {
+        // Fall back to local storage
+        loadFromLocalStorage(dateKey);
+      }
+    })
+    .catch(error => {
+      // Fall back to local storage if sync fails
+      console.error('Load from sheets failed:', error);
+      loadFromLocalStorage(dateKey);
+    });
+}
+
+function showMessage(text) {
+  const msg = document.getElementById('message');
+  msg.textContent = text;
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 3000);
+}
+</script>
+
+</body>
+</html>
