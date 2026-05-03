@@ -439,6 +439,12 @@ input[type="date"], input[type="number"] {
     padding: 6px 4px;
   }
 }
+
+.setup-section a[href*="spreadsheets"]:hover {
+  border-color: #1D9E75 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(29, 158, 117, 0.2);
+}
 </style>
 </head>
 <body>
@@ -502,11 +508,12 @@ input[type="date"], input[type="number"] {
     </div>
 
     <div class="question">
-      <div class="question-label">Motor symptoms compared to usual</div>
+      <div class="question-label">Motor symptoms observed:</div>
+      <p style="margin: 0 0 12px; font-size: 13px; color: var(--color-text-secondary);">Select all that apply (or leave blank if none)</p>
       <div class="options" id="motor-options"></div>
       <div id="motor-details-box" style="display: none; margin-top: 12px;">
-        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Please describe the symptoms:</label>
-        <textarea id="motor-details" placeholder="e.g., Increased tremor in right hand, more stiffness" style="min-height: 60px;"></textarea>
+        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Please describe (when, how severe):</label>
+        <textarea id="motor-details" placeholder="e.g., Tremor in right hand noticeable all morning, stiffness worse in afternoon" style="min-height: 60px;"></textarea>
       </div>
     </div>
 
@@ -596,6 +603,18 @@ input[type="date"], input[type="number"] {
         </div>
         <button onclick="disconnectSheets()" style="margin-top: 8px;">Disconnect</button>
       </div>
+      
+      <div style="margin-top: 16px; padding: 12px; background: #E8F5F1; border-radius: var(--border-radius-md); border: 1px solid #1D9E75;">
+        <p style="margin: 0 0 8px; font-size: 14px; font-weight: 500; color: #1D9E75;">
+          📊 View Data in Google Sheets
+        </p>
+        <p style="margin: 0 0 12px; font-size: 13px; color: var(--color-text-secondary);">
+          Click below to open the Google Sheet and view all the raw data, edit entries directly, or share with medical professionals.
+        </p>
+        <a href="https://docs.google.com/spreadsheets/d/1VDRqMPeRyaQJaN0mOWAX0v4nWZD0vXlxtpDDaAhMIUo/edit" target="_blank" style="display: inline-block; background: #1D9E75; color: white; padding: 10px 20px; border-radius: var(--border-radius-md); text-decoration: none; font-weight: 500; font-size: 14px;">
+          Open Google Sheet
+        </a>
+      </div>
 
       <div style="margin-top: 16px; padding: 12px; background: var(--color-background-info); border-radius: var(--border-radius-md);">
         <p style="margin: 0 0 8px; font-size: 13px; color: var(--color-text-info); font-weight: 500;">
@@ -616,6 +635,45 @@ input[type="date"], input[type="number"] {
         <p style="margin: 12px 0 0; font-size: 13px; color: var(--color-text-info);">
           <strong>Note:</strong> Everyone uses the same URL. Once set up, all devices sync automatically.
         </p>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h3>Reference Information</h3>
+      <p style="margin-bottom: 16px;">Quick access to important care information and schedules</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <a href="https://docs.google.com/spreadsheets/d/1VDRqMPeRyaQJaN0mOWAX0v4nWZD0vXlxtpDDaAhMIUo/edit#gid=SUPPORT_NETWORK_GID" target="_blank" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: white; border: 1.5px solid #E0E0E0; border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-primary); transition: all 0.2s;">
+          <span style="font-size: 24px;">📋</span>
+          <div>
+            <div style="font-weight: 500; font-size: 14px;">Support Network</div>
+            <div style="font-size: 12px; color: var(--color-text-secondary);">Contact details</div>
+          </div>
+        </a>
+        
+        <a href="https://docs.google.com/spreadsheets/d/1VDRqMPeRyaQJaN0mOWAX0v4nWZD0vXlxtpDDaAhMIUo/edit#gid=MONTHLY_PLANNER_GID" target="_blank" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: white; border: 1.5px solid #E0E0E0; border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-primary); transition: all 0.2s;">
+          <span style="font-size: 24px;">📅</span>
+          <div>
+            <div style="font-weight: 500; font-size: 14px;">Monthly Planner</div>
+            <div style="font-size: 12px; color: var(--color-text-secondary);">Appointments</div>
+          </div>
+        </a>
+        
+        <a href="https://docs.google.com/spreadsheets/d/1VDRqMPeRyaQJaN0mOWAX0v4nWZD0vXlxtpDDaAhMIUo/edit#gid=MEDICATION_SCHEDULE_GID" target="_blank" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: white; border: 1.5px solid #E0E0E0; border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-primary); transition: all 0.2s;">
+          <span style="font-size: 24px;">💊</span>
+          <div>
+            <div style="font-weight: 500; font-size: 14px;">Medication Schedule</div>
+            <div style="font-size: 12px; color: var(--color-text-secondary);">Timing & doses</div>
+          </div>
+        </a>
+        
+        <a href="https://docs.google.com/spreadsheets/d/1VDRqMPeRyaQJaN0mOWAX0v4nWZD0vXlxtpDDaAhMIUo/edit#gid=MEDICATION_NOTES_GID" target="_blank" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: white; border: 1.5px solid #E0E0E0; border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-primary); transition: all 0.2s;">
+          <span style="font-size: 24px;">📝</span>
+          <div>
+            <div style="font-weight: 500; font-size: 14px;">Medication Notes</div>
+            <div style="font-size: 12px; color: var(--color-text-secondary);">What meds do</div>
+          </div>
+        </a>
       </div>
     </div>
 
@@ -689,9 +747,14 @@ document.addEventListener('DOMContentLoaded', function() {
   ]);
   
   buildOptions('motor-options', [
-    { text: 'Better than usual', value: 'better' },
-    { text: 'About the same', value: 'same' },
-    { text: 'Worse than usual', value: 'worse', class: 'warning' }
+    { text: 'Tremor', value: 'tremor', class: 'warning' },
+    { text: 'Stiffness/Rigidity', value: 'stiffness', class: 'warning' },
+    { text: 'Slow movement', value: 'slowness', class: 'warning' },
+    { text: 'Freezing', value: 'freezing', class: 'warning' },
+    { text: 'Balance issues', value: 'balance', class: 'warning' },
+    { text: 'Dyskinesia (involuntary movements)', value: 'dyskinesia', class: 'danger' },
+    { text: 'Gait and walking changes', value: 'gait', class: 'warning' },
+    { text: 'None', value: 'none' }
   ]);
   
   buildOptions('onoff-options', [
@@ -705,7 +768,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { text: 'None observed', value: 'none' },
     { text: 'Dizziness / faintness', value: 'dizziness', class: 'warning' },
     { text: 'Confusion or drowsiness', value: 'confusion', class: 'warning' },
-    { text: 'Hallucinations', value: 'hallucinations', class: 'danger' }
+    { text: 'Delirium', value: 'delirium', class: 'danger' }
   ]);
   
   loadLogForDate(currentDate);
@@ -756,12 +819,8 @@ function buildOptions(containerId, options) {
       
       if (containerId === 'motor-options') {
         const detailsBox = document.getElementById('motor-details-box');
-        if (opt.value === 'worse') {
-          detailsBox.style.display = 'block';
-        } else {
-          detailsBox.style.display = 'none';
-          document.getElementById('motor-details').value = '';
-        }
+        // Always show details box when any motor symptom is selected
+        detailsBox.style.display = 'block';
       }
       
       if (containerId === 'onoff-options') {
@@ -946,9 +1005,8 @@ function populateForm(data) {
     const btn = document.querySelector(`#motor-options .option-btn[data-value="${data.motorSymptoms}"]`);
     if (btn) {
       btn.classList.add('selected');
-      if (data.motorSymptoms === 'worse') {
-        document.getElementById('motor-details-box').style.display = 'block';
-      }
+      // Show details box for any motor symptom
+      document.getElementById('motor-details-box').style.display = 'block';
     }
   }
   
