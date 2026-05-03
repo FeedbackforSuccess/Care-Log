@@ -521,6 +521,16 @@ input[type="date"], input[type="number"] {
     </div>
 
     <div class="question">
+      <div class="question-label">Any concerning symptoms today?</div>
+      <p style="margin: 0 0 12px; font-size: 13px; color: var(--color-text-secondary);">Select if she experienced any of these</p>
+      <div class="options" id="symptoms-options"></div>
+      <div id="symptoms-details-box" style="display: none; margin-top: 12px;">
+        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Please describe when and how severe:</label>
+        <textarea id="symptoms-details" placeholder="e.g., Dizzy when standing up around 3pm, lasted 5 minutes" style="min-height: 60px;"></textarea>
+      </div>
+    </div>
+
+    <div class="question">
       <div class="question-label">Quick notes (optional)</div>
       <p style="margin: 0 0 8px; font-size: 13px; color: var(--color-text-secondary);">Anything worth noting - good moments, concerns, changes, questions for doctor...</p>
       <textarea id="notes"></textarea>
@@ -691,6 +701,13 @@ document.addEventListener('DOMContentLoaded', function() {
     { text: 'Hard to tell', value: 'unclear' }
   ]);
   
+  buildOptions('symptoms-options', [
+    { text: 'None observed', value: 'none' },
+    { text: 'Dizziness / faintness', value: 'dizziness', class: 'warning' },
+    { text: 'Confusion or drowsiness', value: 'confusion', class: 'warning' },
+    { text: 'Hallucinations', value: 'hallucinations', class: 'danger' }
+  ]);
+  
   loadLogForDate(currentDate);
   updateSheetsStatus();
 });
@@ -756,6 +773,16 @@ function buildOptions(containerId, options) {
           document.getElementById('onoff-details').value = '';
         }
       }
+      
+      if (containerId === 'symptoms-options') {
+        const detailsBox = document.getElementById('symptoms-details-box');
+        if (opt.value !== 'none') {
+          detailsBox.style.display = 'block';
+        } else {
+          detailsBox.style.display = 'none';
+          document.getElementById('symptoms-details').value = '';
+        }
+      }
     };
     container.appendChild(btn);
   });
@@ -814,6 +841,8 @@ function saveLog() {
     motorDetails: document.getElementById('motor-details').value || '',
     onOffPeriods: document.querySelector('#onoff-options .option-btn.selected')?.dataset.value || null,
     onOffDetails: document.getElementById('onoff-details').value || '',
+    symptoms: document.querySelector('#symptoms-options .option-btn.selected')?.dataset.value || null,
+    symptomsDetails: document.getElementById('symptoms-details').value || '',
     notes: document.getElementById('notes').value,
     timestamp: new Date().toISOString(),
     enteredBy: userName || 'Unknown'
@@ -839,11 +868,13 @@ function clearForm() {
   document.getElementById('day-details').value = '';
   document.getElementById('motor-details').value = '';
   document.getElementById('onoff-details').value = '';
+  document.getElementById('symptoms-details').value = '';
   document.getElementById('med-details-box').style.display = 'none';
   document.getElementById('falls-details-box').style.display = 'none';
   document.getElementById('day-details-box').style.display = 'none';
   document.getElementById('motor-details-box').style.display = 'none';
   document.getElementById('onoff-details-box').style.display = 'none';
+  document.getElementById('symptoms-details-box').style.display = 'none';
 }
 
 function loadLogForDate(date) {
@@ -937,6 +968,20 @@ function populateForm(data) {
   
   if (data.onOffDetails) {
     document.getElementById('onoff-details').value = data.onOffDetails;
+  }
+  
+  if (data.symptoms) {
+    const btn = document.querySelector(`#symptoms-options .option-btn[data-value="${data.symptoms}"]`);
+    if (btn) {
+      btn.classList.add('selected');
+      if (data.symptoms !== 'none') {
+        document.getElementById('symptoms-details-box').style.display = 'block';
+      }
+    }
+  }
+  
+  if (data.symptomsDetails) {
+    document.getElementById('symptoms-details').value = data.symptomsDetails;
   }
   
   if (data.notes) {
@@ -1335,6 +1380,8 @@ function syncToSheets(data) {
     motorDetails: data.motorDetails || '',
     onOffPeriods: data.onOffPeriods || '',
     onOffDetails: data.onOffDetails || '',
+    symptoms: data.symptoms || '',
+    symptomsDetails: data.symptomsDetails || '',
     notes: data.notes || '',
     user: userName
   });
