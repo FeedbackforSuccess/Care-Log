@@ -1413,11 +1413,19 @@ function updateSheetsStatus() {
   const urlInput = document.getElementById('sheets-url');
   const nameInput = document.getElementById('user-name');
   
+  // Always populate the URL field (pre-filled or saved)
+  if (sheetsUrl) {
+    urlInput.value = sheetsUrl;
+  }
+  
+  // Always populate the name field if saved
+  if (userName) {
+    nameInput.value = userName;
+  }
+  
   if (sheetsUrl && userName) {
     status.textContent = 'Connected';
     status.className = 'status-indicator status-connected';
-    urlInput.value = sheetsUrl;
-    nameInput.value = userName;
   } else {
     status.textContent = 'Not connected';
     status.className = 'status-indicator status-disconnected';
