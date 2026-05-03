@@ -495,17 +495,29 @@ input[type="date"], input[type="number"] {
     <div class="question">
       <div class="question-label">How was her day overall?</div>
       <div class="options" id="day-options"></div>
+      <div id="day-details-box" style="display: none; margin-top: 12px;">
+        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">What made the day difficult?</label>
+        <textarea id="day-details" placeholder="e.g., Low energy, increased tremor, poor appetite" style="min-height: 60px;"></textarea>
+      </div>
     </div>
 
     <div class="question">
       <div class="question-label">Motor symptoms compared to usual</div>
       <div class="options" id="motor-options"></div>
+      <div id="motor-details-box" style="display: none; margin-top: 12px;">
+        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Please describe the symptoms:</label>
+        <textarea id="motor-details" placeholder="e.g., Increased tremor in right hand, more stiffness" style="min-height: 60px;"></textarea>
+      </div>
     </div>
 
     <div class="question">
       <div class="question-label">"On/Off" periods today</div>
       <p style="margin: 0 0 12px; font-size: 13px; color: var(--color-text-secondary);">"On" = medications working well, good movement. "Off" = medications wearing off, more tremor/stiffness</p>
       <div class="options" id="onoff-options"></div>
+      <div id="onoff-details-box" style="display: none; margin-top: 12px;">
+        <label style="font-size: 14px; color: var(--color-text-secondary); display: block; margin-bottom: 6px;">Please describe the "Off" periods:</label>
+        <textarea id="onoff-details" placeholder="e.g., Morning was good, medications wore off by 2pm" style="min-height: 60px;"></textarea>
+      </div>
     </div>
 
     <div class="question">
@@ -714,6 +726,36 @@ function buildOptions(containerId, options) {
           document.getElementById('falls-details').value = '';
         }
       }
+      
+      if (containerId === 'day-options') {
+        const detailsBox = document.getElementById('day-details-box');
+        if (opt.value === 'difficult') {
+          detailsBox.style.display = 'block';
+        } else {
+          detailsBox.style.display = 'none';
+          document.getElementById('day-details').value = '';
+        }
+      }
+      
+      if (containerId === 'motor-options') {
+        const detailsBox = document.getElementById('motor-details-box');
+        if (opt.value === 'worse') {
+          detailsBox.style.display = 'block';
+        } else {
+          detailsBox.style.display = 'none';
+          document.getElementById('motor-details').value = '';
+        }
+      }
+      
+      if (containerId === 'onoff-options') {
+        const detailsBox = document.getElementById('onoff-details-box');
+        if (opt.value !== 'mostly-on') {
+          detailsBox.style.display = 'block';
+        } else {
+          detailsBox.style.display = 'none';
+          document.getElementById('onoff-details').value = '';
+        }
+      }
     };
     container.appendChild(btn);
   });
@@ -767,8 +809,11 @@ function saveLog() {
     falls: document.querySelector('#falls-options .option-btn.selected')?.dataset.value || null,
     fallsDetails: document.getElementById('falls-details').value || '',
     dayQuality: document.querySelector('#day-options .option-btn.selected')?.dataset.value || null,
+    dayDetails: document.getElementById('day-details').value || '',
     motorSymptoms: document.querySelector('#motor-options .option-btn.selected')?.dataset.value || null,
+    motorDetails: document.getElementById('motor-details').value || '',
     onOffPeriods: document.querySelector('#onoff-options .option-btn.selected')?.dataset.value || null,
+    onOffDetails: document.getElementById('onoff-details').value || '',
     notes: document.getElementById('notes').value,
     timestamp: new Date().toISOString(),
     enteredBy: userName || 'Unknown'
@@ -791,8 +836,14 @@ function clearForm() {
   document.getElementById('notes').value = '';
   document.getElementById('med-details').value = '';
   document.getElementById('falls-details').value = '';
+  document.getElementById('day-details').value = '';
+  document.getElementById('motor-details').value = '';
+  document.getElementById('onoff-details').value = '';
   document.getElementById('med-details-box').style.display = 'none';
   document.getElementById('falls-details-box').style.display = 'none';
+  document.getElementById('day-details-box').style.display = 'none';
+  document.getElementById('motor-details-box').style.display = 'none';
+  document.getElementById('onoff-details-box').style.display = 'none';
 }
 
 function loadLogForDate(date) {
@@ -848,17 +899,44 @@ function populateForm(data) {
   
   if (data.dayQuality) {
     const btn = document.querySelector(`#day-options .option-btn[data-value="${data.dayQuality}"]`);
-    if (btn) btn.classList.add('selected');
+    if (btn) {
+      btn.classList.add('selected');
+      if (data.dayQuality === 'difficult') {
+        document.getElementById('day-details-box').style.display = 'block';
+      }
+    }
+  }
+  
+  if (data.dayDetails) {
+    document.getElementById('day-details').value = data.dayDetails;
   }
   
   if (data.motorSymptoms) {
     const btn = document.querySelector(`#motor-options .option-btn[data-value="${data.motorSymptoms}"]`);
-    if (btn) btn.classList.add('selected');
+    if (btn) {
+      btn.classList.add('selected');
+      if (data.motorSymptoms === 'worse') {
+        document.getElementById('motor-details-box').style.display = 'block';
+      }
+    }
+  }
+  
+  if (data.motorDetails) {
+    document.getElementById('motor-details').value = data.motorDetails;
   }
   
   if (data.onOffPeriods) {
     const btn = document.querySelector(`#onoff-options .option-btn[data-value="${data.onOffPeriods}"]`);
-    if (btn) btn.classList.add('selected');
+    if (btn) {
+      btn.classList.add('selected');
+      if (data.onOffPeriods !== 'mostly-on') {
+        document.getElementById('onoff-details-box').style.display = 'block';
+      }
+    }
+  }
+  
+  if (data.onOffDetails) {
+    document.getElementById('onoff-details').value = data.onOffDetails;
   }
   
   if (data.notes) {
@@ -1252,8 +1330,11 @@ function syncToSheets(data) {
     falls: data.falls || '',
     fallsDetails: data.fallsDetails || '',
     dayQuality: data.dayQuality || '',
+    dayDetails: data.dayDetails || '',
     motorSymptoms: data.motorSymptoms || '',
+    motorDetails: data.motorDetails || '',
     onOffPeriods: data.onOffPeriods || '',
+    onOffDetails: data.onOffDetails || '',
     notes: data.notes || '',
     user: userName
   });
