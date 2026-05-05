@@ -783,6 +783,30 @@ function buildOptions(containerId, options) {
     btn.textContent = opt.text;
     btn.dataset.value = opt.value;
     btn.onclick = () => {
+      // Multi-select for motor symptoms
+      if (containerId === 'motor-options') {
+        if (opt.value === 'none') {
+          // If "None" clicked, deselect all others
+          container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          document.getElementById('motor-details-box').style.display = 'none';
+          document.getElementById('motor-details').value = '';
+        } else {
+          // If any symptom clicked, deselect "None" and toggle this symptom
+          const noneBtn = container.querySelector('.option-btn[data-value="none"]');
+          if (noneBtn) noneBtn.classList.remove('selected');
+          btn.classList.toggle('selected');
+          
+          // Show details box if any symptom (except "none") is selected
+          const anySelected = container.querySelector('.option-btn.selected:not([data-value="none"])');
+          const detailsBox = document.getElementById('motor-details-box');
+          detailsBox.style.display = anySelected ? 'block' : 'none';
+          if (!anySelected) document.getElementById('motor-details').value = '';
+        }
+        return; // Exit early for motor symptoms
+      }
+      
+      // Single-select for all other options
       container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       
@@ -815,12 +839,6 @@ function buildOptions(containerId, options) {
           detailsBox.style.display = 'none';
           document.getElementById('day-details').value = '';
         }
-      }
-      
-      if (containerId === 'motor-options') {
-        const detailsBox = document.getElementById('motor-details-box');
-        // Always show details box when any motor symptom is selected
-        detailsBox.style.display = 'block';
       }
       
       if (containerId === 'onoff-options') {
@@ -888,6 +906,10 @@ function switchTab(tabName) {
 }
 
 function saveLog() {
+  // Get multiple motor symptoms
+  const motorBtns = document.querySelectorAll('#motor-options .option-btn.selected');
+  const motorSymptoms = Array.from(motorBtns).map(btn => btn.dataset.value).join(', ');
+  
   const data = {
     date: currentDate.toISOString().split('T')[0],
     medications: document.querySelector('#meds-options .option-btn.selected')?.dataset.value || null,
@@ -896,7 +918,7 @@ function saveLog() {
     fallsDetails: document.getElementById('falls-details').value || '',
     dayQuality: document.querySelector('#day-options .option-btn.selected')?.dataset.value || null,
     dayDetails: document.getElementById('day-details').value || '',
-    motorSymptoms: document.querySelector('#motor-options .option-btn.selected')?.dataset.value || null,
+    motorSymptoms: motorSymptoms || null,
     motorDetails: document.getElementById('motor-details').value || '',
     onOffPeriods: document.querySelector('#onoff-options .option-btn.selected')?.dataset.value || null,
     onOffDetails: document.getElementById('onoff-details').value || '',
@@ -1002,10 +1024,16 @@ function populateForm(data) {
   }
   
   if (data.motorSymptoms) {
-    const btn = document.querySelector(`#motor-options .option-btn[data-value="${data.motorSymptoms}"]`);
-    if (btn) {
-      btn.classList.add('selected');
-      // Show details box for any motor symptom
+    // Handle multiple motor symptoms (comma-separated)
+    const symptoms = data.motorSymptoms.split(', ');
+    symptoms.forEach(symptom => {
+      const btn = document.querySelector(`#motor-options .option-btn[data-value="${symptom.trim()}"]`);
+      if (btn) {
+        btn.classList.add('selected');
+      }
+    });
+    // Show details box if any symptom except "none" is selected
+    if (data.motorSymptoms !== 'none') {
       document.getElementById('motor-details-box').style.display = 'block';
     }
   }
